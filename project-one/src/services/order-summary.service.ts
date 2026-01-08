@@ -6,18 +6,33 @@ import { Transaction } from "@/interface/transaction.interface";
 import {
   OrderSummary,
   GradeSummary,
+  OrderSummaryFilter,
 } from "@/interface/order-summary.interface";
 import { ProductCategory } from "@/interface/product-category.interface";
 
-export const getOrderSummary = async (): Promise<OrderSummary[]> => {
+export const getOrderSummary = async (
+  filters: OrderSummaryFilter = {}
+): Promise<OrderSummary[]> => {
   const [{ buyTransaction, sellTransaction }, { productList }] =
     await Promise.all([getTransactions(), getProductCategories()]);
 
   const productMap = buildProductMap(productList);
   const orderSummaryMap = new Map<string, OrderSummary>();
 
-  processTransactions(buyTransaction, "buy", orderSummaryMap, productMap);
-  processTransactions(sellTransaction, "sell", orderSummaryMap, productMap);
+  processTransactions(
+    buyTransaction,
+    "buy",
+    orderSummaryMap,
+    productMap,
+    filters
+  );
+  processTransactions(
+    sellTransaction,
+    "sell",
+    orderSummaryMap,
+    productMap,
+    filters
+  );
 
   orderSummaryMap.forEach((order) => {
     let buyQty = 0;
@@ -73,9 +88,13 @@ const processTransactions = (
   transactions: Transaction[],
   type: "buy" | "sell",
   orderSummaryMap: Map<string, OrderSummary>,
-  productMap: Map<string, { categoryName: string; subCategoryName: string }>
+  productMap: Map<string, { categoryName: string; subCategoryName: string }>,
+  filters: OrderSummaryFilter
 ) => {
   transactions.forEach((order) => {
+    if (filters.dateFrom && order.orderFinishedDate < filters.dateFrom) return;
+    if (filters.dateTo && order.orderFinishedDate > filters.dateTo) return;
+
     order.requestList.forEach((category) => {
       const key = `${category.categoryID}-${category.subCategoryID}`;
 
@@ -90,19 +109,29 @@ const processTransactions = (
           grades: {},
           remainingQuantityKg: 0,
           remainingTotalAmount: 0,
+          orderIds: [],
+          orderFinishedDates: [],
         });
       }
 
-      const order = orderSummaryMap.get(key)!;
+      const summary = orderSummaryMap.get(key)!;
+
+      if (!summary.orderIds.includes(order.orderId)) {
+        summary.orderIds.push(order.orderId);
+      }
+
+      if (!summary.orderFinishedDates.includes(order.orderFinishedDate)) {
+        summary.orderFinishedDates.push(order.orderFinishedDate);
+      }
 
       category.requestList.forEach((req) => {
         const gradeKey = req.grade;
 
-        if (!order.grades[gradeKey]) {
-          order.grades[gradeKey] = createEmptyGrade();
+        if (!summary.grades[gradeKey]) {
+          summary.grades[gradeKey] = createEmptyGrade();
         }
 
-        const grade = order.grades[gradeKey];
+        const grade = summary.grades[gradeKey];
 
         const quantity = Number(req.quantity || 0);
         const total = Number(req.total || 0);

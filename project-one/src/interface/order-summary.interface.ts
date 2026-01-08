@@ -13,4 +13,11 @@ export interface OrderSummary {
   grades: Record<string, GradeSummary>;
   remainingQuantityKg: number;
   remainingTotalAmount: number;
+  orderIds: string[];
+  orderFinishedDates: string[];
+}
+
+export interface OrderSummaryFilter {
+  dateFrom?: string;
+  dateTo?: string;
 }

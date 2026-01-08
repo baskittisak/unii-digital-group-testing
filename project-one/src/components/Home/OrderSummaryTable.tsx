@@ -14,8 +14,10 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
+import Button from "@mui/material/Button";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import OrderInfoDialog from "@/components/Home/OrderInfoDialog";
 
 interface OrderSummaryTableProps {
   orderSummary: OrderSummary[];
@@ -25,31 +27,45 @@ export default function OrderSummaryTable({
   orderSummary,
 }: OrderSummaryTableProps) {
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedRow, setSelectedRow] = useState<OrderSummary | null>(null);
+
+  const onOpenDialog = (row: OrderSummary) => {
+    setSelectedRow(row);
+    setOpenDialog(true);
+  };
+
+  const onCloseDialog = () => {
+    setSelectedRow(null);
+    setOpenDialog(false);
+  };
 
   return (
-    <Box>
+    <>
       <TableContainer component={Paper} variant="outlined">
         <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>ชนิดของสินค้า</TableCell>
-              <TableCell>หมวดหมู่ย่อย</TableCell>
-              <TableCell align="right">ปริมาณซื้อทั้งหมด (กิโลกรัม)</TableCell>
+              <TableCell width="20%">หมวดหมู่ย่อย</TableCell>
+              <TableCell align="right">ปริมาณการซื้อทั้งหมด (กิโลกรัม)</TableCell>
               <TableCell align="right">มูลค่าการซื้อทั้งหมด (บาท)</TableCell>
-              <TableCell align="right">ปริมาณขายทั้งหมด (กิโลกรัม)</TableCell>
+              <TableCell align="right">ปริมาณการขายทั้งหมด (กิโลกรัม)</TableCell>
               <TableCell align="right">มูลค่าการขายทั้งหมด (บาท)</TableCell>
-              <TableCell align="right">ปริมาณคงเหลือทั้งหมด (กิโลกรัม)</TableCell>
+              <TableCell align="right">
+                ปริมาณคงเหลือทั้งหมด (กิโลกรัม)
+              </TableCell>
               <TableCell align="right">มูลค่าคงเหลือทั้งหมด (บาท)</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {orderSummary.map((row) => {
-              const rowKey = `${row.categoryId}-${row.subCategoryId}`;
+            {orderSummary.map((order) => {
+              const rowKey = `${order.categoryId}-${order.subCategoryId}`;
               const isOpen = openKey === rowKey;
 
-              const totals = Object.values(row.grades).reduce(
+              const totals = Object.values(order.grades).reduce(
                 (acc, grade) => {
                   acc.buyQty += grade.buyQuantityKg;
                   acc.buyAmt += grade.buyTotalAmount;
@@ -64,10 +80,10 @@ export default function OrderSummaryTable({
                 <Fragment key={rowKey}>
                   <TableRow>
                     <TableCell>
-                      {row.categoryId} - {row.categoryName}
+                      {order.categoryId} - {order.categoryName}
                     </TableCell>
                     <TableCell>
-                      {row.subCategoryId} - {row.subCategoryName}
+                      {order.subCategoryId} - {order.subCategoryName}
                     </TableCell>
                     <TableCell align="right">
                       {numberWithCommas(totals.buyQty)}
@@ -102,25 +118,39 @@ export default function OrderSummaryTable({
                   </TableRow>
 
                   <TableRow>
-                    <TableCell colSpan={9} sx={{ p: 0 }}>
+                    <TableCell colSpan={9} sx={{ p: 0, bgcolor: "#fff" }}>
                       <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                        <Box sx={{ m: 1 }}>
-                          <Typography variant="subtitle2">
-                            รายละเอียดแยกตามเกรด
-                          </Typography>
-
+                        <Box sx={{ p: "16px 48px 24px" }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Typography variant="subtitle2" fontWeight={600}>
+                              รายละเอียดแยกตามเกรด
+                            </Typography>
+                            <Button
+                              size="small"
+                              onClick={() => onOpenDialog(order)}
+                              color="info"
+                            >
+                              ดูรายละเอียดคำสั่งซื้อ
+                            </Button>
+                          </Box>
                           <Table size="small">
                             <TableHead>
                               <TableRow>
                                 <TableCell>เกรด</TableCell>
                                 <TableCell align="right">
-                                  ปริมาณซื้อ (กิโลกรัม)
+                                  ปริมาณการซื้อ (กิโลกรัม)
                                 </TableCell>
                                 <TableCell align="right">
                                   มูลค่าการซื้อ (บาท)
                                 </TableCell>
                                 <TableCell align="right">
-                                  ปริมาณขาย (กิโลกรัม)
+                                  ปริมาณการขาย (กิโลกรัม)
                                 </TableCell>
                                 <TableCell align="right">
                                   มูลค่าการขาย (บาท)
@@ -134,7 +164,7 @@ export default function OrderSummaryTable({
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {Object.entries(row.grades).map(
+                              {Object.entries(order.grades).map(
                                 ([grade, gradeSummary]) => (
                                   <TableRow key={grade}>
                                     <TableCell>{grade}</TableCell>
@@ -185,6 +215,11 @@ export default function OrderSummaryTable({
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+      <OrderInfoDialog
+        open={openDialog}
+        orderSummary={selectedRow}
+        onClose={onCloseDialog}
+      />
+    </>
   );
 }
