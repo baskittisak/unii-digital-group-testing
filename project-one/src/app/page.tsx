@@ -7,7 +7,7 @@ interface HomePageProps {
   searchParams: Record<string, string | string[] | undefined>;
 }
 
-const getString = (value?: string | string[]) =>
+const getText = (value?: string | string[]) =>
   typeof value === "string" && value.trim() !== "" ? value : undefined;
 
 const getNumber = (value?: string | string[]) => {
@@ -19,12 +19,12 @@ const getNumber = (value?: string | string[]) => {
 const buildFilters = (
   searchParams: HomePageProps["searchParams"]
 ): OrderSummaryFilter => ({
-  orderId: getString(searchParams.orderId),
-  dateFrom: getString(searchParams.dateFrom),
-  dateTo: getString(searchParams.dateTo),
-  categoryId: getString(searchParams.categoryId),
-  subCategoryId: getString(searchParams.subCategoryId),
-  grade: getString(searchParams.grade),
+  orderId: getText(searchParams.orderId),
+  dateFrom: getText(searchParams.dateFrom),
+  dateTo: getText(searchParams.dateTo),
+  categoryId: getText(searchParams.categoryId),
+  subCategoryId: getText(searchParams.subCategoryId),
+  grade: getText(searchParams.grade),
   priceFrom: getNumber(searchParams.priceFrom),
   priceTo: getNumber(searchParams.priceTo),
 });
