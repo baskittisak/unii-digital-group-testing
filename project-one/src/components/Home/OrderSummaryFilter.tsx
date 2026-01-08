@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { OrderSummaryFilter } from "@/interface/order-summary.interface";
 import { ProductCategory } from "@/interface/product-category.interface";
@@ -19,11 +19,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface Props {
   productList: ProductCategory[];
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 const GRADES = ["A", "B", "C", "D"] as const;
 
-export default function OrderSummaryFilterComponent({ productList }: Props) {
+export default function OrderSummaryFilterComponent({
+  productList,
+  setLoading,
+}: Props) {
   const router = useRouter();
   const [filters, setFilters] = useState<OrderSummaryFilter>({});
   const [open, setOpen] = useState<boolean>(false);
@@ -47,6 +51,7 @@ export default function OrderSummaryFilterComponent({ productList }: Props) {
   };
 
   const handleSearch = () => {
+    setLoading(true);
     const params = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {
@@ -56,11 +61,14 @@ export default function OrderSummaryFilterComponent({ productList }: Props) {
     });
 
     router.push(`?${params.toString()}`);
+    setTimeout(() => setLoading(false), 1000);
   };
 
   const handleClear = () => {
+    setLoading(true);
     setFilters({});
     router.push("?");
+    setTimeout(() => setLoading(false), 1000);
   };
 
   const subCategoryOptions = useMemo(() => {
@@ -145,9 +153,7 @@ export default function OrderSummaryFilterComponent({ productList }: Props) {
               size="small"
               disabled={!filters.categoryId}
               value={filters.subCategoryId ?? ""}
-              onChange={(e) =>
-                handleSetText("subCategoryId", e.target.value)
-              }
+              onChange={(e) => handleSetText("subCategoryId", e.target.value)}
               fullWidth
             >
               {subCategoryOptions.map((s) => (
@@ -158,7 +164,11 @@ export default function OrderSummaryFilterComponent({ productList }: Props) {
             </TextField>
           </Stack>
 
-          <Stack spacing={2} direction={{ xs: "column", md: "row" }} sx={{ mt: 2 }}>
+          <Stack
+            spacing={2}
+            direction={{ xs: "column", md: "row" }}
+            sx={{ mt: 2 }}
+          >
             <TextField
               label="หมายเลขคำสั่งซื้อ"
               size="small"

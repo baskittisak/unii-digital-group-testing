@@ -18,13 +18,16 @@ import Button from "@mui/material/Button";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import OrderInfoDialog from "@/components/Home/OrderInfoDialog";
+import OrderSummarySkeleton from "@/components/Home/OrderSummarySkeleton";
 
 interface OrderSummaryTableProps {
   orderSummary: OrderSummary[];
+  loading: boolean;
 }
 
 export default function OrderSummaryTable({
   orderSummary,
+  loading,
 }: OrderSummaryTableProps) {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -65,7 +68,12 @@ export default function OrderSummaryTable({
           </TableHead>
 
           <TableBody>
-            {orderSummary.length === 0 && (
+            {loading &&
+              Array.from({ length: 5 }).map((_, index) => (
+                <OrderSummarySkeleton key={index} />
+              ))}
+
+            {!loading && orderSummary.length === 0 && (
               <TableRow>
                 <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
                   <Typography variant="subtitle1" color="text.secondary">
@@ -77,7 +85,8 @@ export default function OrderSummaryTable({
                 </TableCell>
               </TableRow>
             )}
-            {orderSummary.length > 0 &&
+            {!loading &&
+              orderSummary.length > 0 &&
               orderSummary.map((order) => {
                 const rowKey = `${order.categoryId}-${order.subCategoryId}`;
                 const isOpen = openKey === rowKey;
