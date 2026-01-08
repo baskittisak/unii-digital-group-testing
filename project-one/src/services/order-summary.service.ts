@@ -96,6 +96,17 @@ const processTransactions = (
     if (filters.dateTo && order.orderFinishedDate > filters.dateTo) return;
 
     order.requestList.forEach((category) => {
+      if (filters.categoryId && category.categoryID !== filters.categoryId) {
+        return;
+      }
+
+      if (
+        filters.subCategoryId &&
+        category.subCategoryID !== filters.subCategoryId
+      ) {
+        return;
+      }
+
       const key = `${category.categoryID}-${category.subCategoryID}`;
 
       if (!orderSummaryMap.has(key)) {

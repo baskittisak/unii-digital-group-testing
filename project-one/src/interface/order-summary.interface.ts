@@ -20,4 +20,6 @@ export interface OrderSummary {
 export interface OrderSummaryFilter {
   dateFrom?: string;
   dateTo?: string;
+  categoryId?: string;
+  subCategoryId?: string;
 }
