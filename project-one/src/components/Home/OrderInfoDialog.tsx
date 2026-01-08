@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { OrderSummary } from "@/interface/order-summary.interface";
+import { numberWithCommas } from "@/utils";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -83,7 +84,7 @@ export default function OrderInfoDialog({
                 sellPrices.map((price) => (
                   <Chip
                     key={price}
-                    label={`${price.toLocaleString()} บาท`}
+                    label={`${numberWithCommas(price)} บาท`}
                     color="success"
                     variant="outlined"
                   />
