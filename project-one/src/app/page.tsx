@@ -1,17 +1,41 @@
 import { getOrderSummary } from "@/services/order-summary.service";
+import { getProductCategories } from "@/services/product-category.service";
+import { OrderSummaryFilter } from "@/interface/order-summary.interface";
 import Home from "@/components/Home";
 
-export default async function HomePage() {
-  const orderSummary = await getOrderSummary({
-    // orderId: "CUNIIPRO20240409110012",
-    // dateFrom: "2024-04-09",
-    // dateTo: "2024-04-31",
-    // categoryId: "01",
-    // subCategoryId: "0101",
-    //  grade: "D",
-    priceFrom: 10,
-    priceTo: 20,
-  });
+interface HomePageProps {
+  searchParams: Record<string, string | string[] | undefined>;
+}
 
-  return <Home orderSummary={orderSummary} />;
+const getString = (value?: string | string[]) =>
+  typeof value === "string" && value.trim() !== "" ? value : undefined;
+
+const getNumber = (value?: string | string[]) => {
+  if (typeof value !== "string") return undefined;
+  const num = Number(value);
+  return Number.isNaN(num) ? undefined : num;
+};
+
+const buildFilters = (
+  searchParams: HomePageProps["searchParams"]
+): OrderSummaryFilter => ({
+  orderId: getString(searchParams.orderId),
+  dateFrom: getString(searchParams.dateFrom),
+  dateTo: getString(searchParams.dateTo),
+  categoryId: getString(searchParams.categoryId),
+  subCategoryId: getString(searchParams.subCategoryId),
+  grade: getString(searchParams.grade),
+  priceFrom: getNumber(searchParams.priceFrom),
+  priceTo: getNumber(searchParams.priceTo),
+});
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const filters = buildFilters(searchParams);
+
+  const [orderSummary, { productList }] = await Promise.all([
+    getOrderSummary(filters),
+    getProductCategories(),
+  ]);
+
+  return <Home orderSummary={orderSummary} productList={productList} />;
 }

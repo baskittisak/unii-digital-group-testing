@@ -46,11 +46,15 @@ export default function OrderSummaryTable({
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>ชนิดของสินค้า</TableCell>
+              <TableCell width="20%">ชนิดของสินค้า</TableCell>
               <TableCell width="20%">หมวดหมู่ย่อย</TableCell>
-              <TableCell align="right">ปริมาณการซื้อทั้งหมด (กิโลกรัม)</TableCell>
+              <TableCell align="right">
+                ปริมาณการซื้อทั้งหมด (กิโลกรัม)
+              </TableCell>
               <TableCell align="right">มูลค่าการซื้อทั้งหมด (บาท)</TableCell>
-              <TableCell align="right">ปริมาณการขายทั้งหมด (กิโลกรัม)</TableCell>
+              <TableCell align="right">
+                ปริมาณการขายทั้งหมด (กิโลกรัม)
+              </TableCell>
               <TableCell align="right">มูลค่าการขายทั้งหมด (บาท)</TableCell>
               <TableCell align="right">
                 ปริมาณคงเหลือทั้งหมด (กิโลกรัม)
