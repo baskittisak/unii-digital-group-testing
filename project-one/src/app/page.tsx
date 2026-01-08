@@ -4,7 +4,7 @@ import { OrderSummaryFilter } from "@/interface/order-summary.interface";
 import Home from "@/components/Home";
 
 interface HomePageProps {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
 const getText = (value?: string | string[]) =>
@@ -17,7 +17,7 @@ const getNumber = (value?: string | string[]) => {
 };
 
 const buildFilters = (
-  searchParams: HomePageProps["searchParams"]
+  searchParams: Record<string, string | string[] | undefined>
 ): OrderSummaryFilter => ({
   orderId: getText(searchParams.orderId),
   dateFrom: getText(searchParams.dateFrom),
@@ -30,7 +30,8 @@ const buildFilters = (
 });
 
 export default async function HomePage({ searchParams }: HomePageProps) {
-  const filters = buildFilters(searchParams);
+  const resolvedSearchParams = await searchParams;
+  const filters = buildFilters(resolvedSearchParams ?? {});
 
   const [orderSummary, { productList }] = await Promise.all([
     getOrderSummary(filters),
