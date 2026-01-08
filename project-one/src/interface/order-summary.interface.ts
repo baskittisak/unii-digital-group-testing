@@ -23,4 +23,5 @@ export interface OrderSummaryFilter {
   categoryId?: string;
   subCategoryId?: string;
   orderId?: string;
+  grade?: string;
 }

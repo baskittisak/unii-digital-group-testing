@@ -108,6 +108,13 @@ const processTransactions = (
         return;
       }
 
+      const validGrades = category.requestList.filter((req) => {
+        if (filters.grade && req.grade !== filters.grade) return false;
+        return true;
+      });
+
+      if (validGrades.length === 0) return;
+
       const key = `${category.categoryID}-${category.subCategoryID}`;
 
       if (!orderSummaryMap.has(key)) {
@@ -136,7 +143,7 @@ const processTransactions = (
         summary.orderFinishedDates.push(order.orderFinishedDate);
       }
 
-      category.requestList.forEach((req) => {
+      validGrades.forEach((req) => {
         const gradeKey = req.grade;
 
         if (!summary.grades[gradeKey]) {
