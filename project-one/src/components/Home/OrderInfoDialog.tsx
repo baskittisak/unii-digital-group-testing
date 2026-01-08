@@ -27,8 +27,17 @@ export default function OrderInfoDialog({
 
   if (!orderSummary) return null;
 
+  const sellPrices = Array.from(
+    new Set(Object.values(orderSummary.grades).flatMap((grade) => grade.prices))
+  ).sort((a, b) => a - b);
+
+  const handleClose = () => {
+    setTab(0);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>รายละเอียดคำสั่งซื้อ</DialogTitle>
 
       <DialogContent dividers>
@@ -39,18 +48,14 @@ export default function OrderInfoDialog({
         >
           <Tab label="หมายเลขคำสั่งซื้อทั้งหมด" />
           <Tab label="วันที่ทำรายการทั้งหมด" />
+          <Tab label="ราคาขายทั้งหมด" />
         </Tabs>
 
         {tab === 0 && (
           <Box>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               {orderSummary.orderIds.map((id) => (
-                <Chip
-                  key={id}
-                  label={id}
-                  color="primary"
-                  variant="outlined"
-                />
+                <Chip key={id} label={id} color="primary" variant="outlined" />
               ))}
             </Box>
           </Box>
@@ -70,10 +75,29 @@ export default function OrderInfoDialog({
             </Box>
           </Box>
         )}
+
+        {tab === 2 && (
+          <Box>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {sellPrices.length > 0 ? (
+                sellPrices.map((price) => (
+                  <Chip
+                    key={price}
+                    label={`${price.toLocaleString()} บาท`}
+                    color="success"
+                    variant="outlined"
+                  />
+                ))
+              ) : (
+                <Chip label="ไม่มีข้อมูลราคา" disabled />
+              )}
+            </Box>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>ปิด</Button>
+        <Button onClick={handleClose}>ปิด</Button>
       </DialogActions>
     </Dialog>
   );

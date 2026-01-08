@@ -3,6 +3,7 @@ export interface GradeSummary {
   buyTotalAmount: number;
   sellQuantityKg: number;
   sellTotalAmount: number;
+  prices: number[];
 }
 
 export interface OrderSummary {
@@ -24,4 +25,6 @@ export interface OrderSummaryFilter {
   subCategoryId?: string;
   orderId?: string;
   grade?: string;
+  priceFrom?: number;
+  priceTo?: number;
 }

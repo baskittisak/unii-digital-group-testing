@@ -8,7 +8,9 @@ export default async function HomePage() {
     // dateTo: "2024-04-31",
     // categoryId: "01",
     // subCategoryId: "0101",
-     grade: "D",
+    //  grade: "D",
+    priceFrom: 10,
+    priceTo: 20,
   });
 
   return <Home orderSummary={orderSummary} />;

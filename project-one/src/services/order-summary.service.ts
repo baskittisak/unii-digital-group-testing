@@ -110,6 +110,17 @@ const processTransactions = (
 
       const validGrades = category.requestList.filter((req) => {
         if (filters.grade && req.grade !== filters.grade) return false;
+
+        const price = Number(req.price || 0);
+
+        if (filters.priceFrom !== undefined && price < filters.priceFrom) {
+          return false;
+        }
+
+        if (filters.priceTo !== undefined && price > filters.priceTo) {
+          return false;
+        }
+
         return true;
       });
 
@@ -154,6 +165,11 @@ const processTransactions = (
 
         const quantity = Number(req.quantity || 0);
         const total = Number(req.total || 0);
+        const price = Number(req.price || 0);
+
+        if (!grade.prices.includes(price)) {
+          grade.prices.push(price);
+        }
 
         if (type === "buy") {
           grade.buyQuantityKg += quantity;
@@ -172,4 +188,5 @@ const createEmptyGrade = (): GradeSummary => ({
   buyTotalAmount: 0,
   sellQuantityKg: 0,
   sellTotalAmount: 0,
+  prices: [],
 });
