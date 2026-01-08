@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { OrderSummaryFilter } from "@/interface/order-summary.interface";
 import { ProductCategory } from "@/interface/product-category.interface";
@@ -23,13 +23,9 @@ export default function OrderSummaryFilterComponent({ productList }: Props) {
   const router = useRouter();
   const [filters, setFilters] = useState<OrderSummaryFilter>({});
 
-  const subCategoryOptions = useMemo(() => {
-    if (!filters.categoryId) return [];
-    const category = productList.find(
-      (c) => c.categoryId === filters.categoryId
-    );
-    return category?.subcategory ?? [];
-  }, [filters.categoryId, productList]);
+  useEffect(() => {
+    router.replace("/", { scroll: false });
+  }, [router]);
 
   const handleSetText = (key: keyof OrderSummaryFilter, value: string) => {
     setFilters((prev) => ({
@@ -59,8 +55,16 @@ export default function OrderSummaryFilterComponent({ productList }: Props) {
 
   const handleClear = () => {
     setFilters({});
-    router.push("?")
+    router.push("?");
   };
+
+  const subCategoryOptions = useMemo(() => {
+    if (!filters.categoryId) return [];
+    const category = productList.find(
+      (c) => c.categoryId === filters.categoryId
+    );
+    return category?.subcategory ?? [];
+  }, [filters.categoryId, productList]);
 
   const isSearchDisabled = useMemo(() => {
     return Object.keys(filters).length === 0;
