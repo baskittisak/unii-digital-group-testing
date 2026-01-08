@@ -22,4 +22,5 @@ export interface OrderSummaryFilter {
   dateTo?: string;
   categoryId?: string;
   subCategoryId?: string;
+  orderId?: string;
 }

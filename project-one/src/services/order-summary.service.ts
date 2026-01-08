@@ -94,6 +94,7 @@ const processTransactions = (
   transactions.forEach((order) => {
     if (filters.dateFrom && order.orderFinishedDate < filters.dateFrom) return;
     if (filters.dateTo && order.orderFinishedDate > filters.dateTo) return;
+    if (filters.orderId && order.orderId !== filters.orderId) return;
 
     order.requestList.forEach((category) => {
       if (filters.categoryId && category.categoryID !== filters.categoryId) {
