@@ -135,7 +135,7 @@ export default function OrderSummaryTable({
                     </TableRow>
 
                     <TableRow>
-                      <TableCell colSpan={9} sx={{ p: 0, bgcolor: "#fff" }}>
+                      <TableCell colSpan={9} sx={{ p: 0, bgcolor: "#eee" }}>
                         <Collapse in={isOpen} timeout="auto" unmountOnExit>
                           <Box sx={{ p: "16px 48px 24px" }}>
                             <Box
